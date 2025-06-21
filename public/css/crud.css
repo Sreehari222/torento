@@ -1,0 +1,52 @@
+/* CRUD Operations Styling */
+.crud-container {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.crud-container .card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.crud-container .card-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+
+.crud-container .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.crud-container label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Modal styling */
+#deleteModal .modal-content {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+#deleteModal .modal-header {
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+}
+
+#deleteModal .modal-footer {
+    border-top: 1px solid #eee;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .crud-container {
+        padding: 15px;
+    }
+
+    .crud-container .card-footer .btn {
+        margin-bottom: 10px;
+        width: 100%;
+    }
+}
