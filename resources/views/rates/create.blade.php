@@ -591,10 +591,10 @@
                     </button>
                     <div class="nav-dropdown-content">
                         <a href="{{ route('rates.create') }}" class="nav-dropdown-item active">
-                            Create New Rate
+                            Create New Services
                         </a>
                         <a href="{{ route('rates.edit') }}" class="nav-dropdown-item">
-                            Update Rate
+                            Update Services
                         </a>
                     </div>
                 </div>

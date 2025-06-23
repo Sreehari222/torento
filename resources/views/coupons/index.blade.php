@@ -48,15 +48,6 @@
             <div class="card-header">
                 <h3>All Coupons</h3>
                 <div class="search-filter">
-                    <div class="search-box">
-                        <i data-lucide="search"></i>
-                        <input type="text" id="coupon-search" placeholder="Search coupons...">
-                    </div>
-                    <select id="status-filter">
-                        <option value="">All Status</option>
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                    </select>
                 </div>
             </div>
             <div class="table-responsive">
@@ -77,10 +68,6 @@
                             <tr data-status="{{ $coupon->is_active ? 'active' : 'inactive' }}">
                                 <td>
                                     <span class="coupon-code">{{ $coupon->code }}</span>
-                                    <button class="copy-btn" data-clipboard-text="{{ $coupon->code }}"
-                                        title="Copy to clipboard">
-                                        <i data-lucide="copy"></i>
-                                    </button>
                                 </td>
                                 <td>
                                     {{ $coupon->discount_value }}
@@ -189,15 +176,12 @@
                     <div class="error-message" id="expiry_date-error"></div>
                 </div>
                 <div class="form-group">
-    <label for="is_active">Active Status</label>
     <!-- Hidden field for false state -->
     <input type="hidden" name="is_active" value="0">
     <!-- Checkbox for true state -->
     <div class="toggle-switch">
         <input type="checkbox" id="is_active" name="is_active" value="1"
                {{ old('is_active', true) ? 'checked' : '' }}>
-        <label for="is_active" class="toggle-label"></label>
-        <span class="toggle-text">{{ old('is_active', true) ? 'Active' : 'Inactive' }}</span>
     </div>
     <div class="error-message" id="is_active-error"></div>
 </div>

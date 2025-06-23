@@ -44,70 +44,65 @@
 
     <!-- Coupons Table -->
     <div class="table-card">
-        <div class="table-header">
-            <h3>Recent Bookings</h3>
-        </div>
-        <div class="table-responsive">
-            <table id="bookings-table">
-                <thead>
-                    <tr>
-                        <th>Booking ID</th>
-                        <th>Customer</th>
-                        <th>Service</th>
-                        <th>Date & Time</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <!-- Only the bookings table section is changed - everything else remains identical -->
-                <tbody>
-                    @foreach ($recentBookings as $booking)
-                        <tr data-status="{{ strtolower($booking->status) }}">
-                            <td>#{{ $booking->id }}</td>
-                            <td>
-                                <div class="customer-cell">
-                                    <div class="customer-avatar">
-                                        {{ strtoupper(substr($booking->user->name ?? '', 0, 1)) }}
-                                    </div>
-                                    <div class="customer-info">
-                                        <div class="customer-name">{{ $booking->user->name ?? 'N/A' }}</div>
-                                        <div class="customer-email">{{ $booking->user->email ?? '' }}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>{{ $booking->service->name ?? 'N/A' }}</td>
-                            <td>
-                                <div class="datetime-cell">
-                                    <i data-lucide="calendar" style="width: 14px; height: 14px;"></i>
-                                    {{ $booking->created_at->format('M j, Y') }}
-                                    <i data-lucide="clock" style="width: 14px; height: 14px; margin-left: 8px;"></i>
-                                    {{ $booking->created_at->format('h:i A') }}
-                                </div>
-                            </td>
-                            <td>${{ number_format($booking->total ?? 0, 2) }}</td>
-                            <td>
-                                <span class="status-badge status-{{ strtolower($booking->status) }}">
-                                    {{ ucfirst($booking->status) }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-view" data-id="{{ $booking->id }}">
-                                        <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
-                                    </button>
-                                    <button class="btn-edit" data-id="{{ $booking->id }}">
-                                        <i data-lucide="edit" style="width: 16px; height: 16px;"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
+    <div class="table-header">
+        <h3>Recent Bookings</h3>
     </div>
+    <div class="table-responsive">
+        <table id="bookings-table">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Date & Time</th>
+                    <th>Amount</th>
+                    <th>Payment Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($recentBookings as $booking)
+                    <tr data-status="{{ strtolower($booking->status) }}" id="booking-row-{{ $booking->id }}">
+                        <td>#{{ $booking->id }}</td>
+                        <td>
+                            <div class="customer-cell">
+                                <div class="customer-avatar">
+                                    {{ strtoupper(substr($booking->user->name ?? '', 0, 1)) }}
+                                </div>
+                                <div class="customer-info">
+                                    <div class="customer-name">{{ $booking->name ?? 'N/A' }}</div>
+                                    <div class="customer-email">{{ $booking->email ?? '' }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ $booking->service->name ?? 'N/A' }}</td>
+                        <td>
+                            <div class="datetime-cell">
+                                <i data-lucide="calendar" style="width: 14px; height: 14px;"></i>
+                                {{ $booking->created_at->format('M j, Y') }}
+                                <i data-lucide="clock" style="width: 14px; height: 14px; margin-left: 8px;"></i>
+                                {{ $booking->created_at->format('h:i A') }}
+                            </div>
+                        </td>
+                        <td>${{ number_format($booking->total ?? 0, 2) }}</td>
+                        <td>
+                            <span class="status-badge status-{{ strtolower($booking->payment_method) }}">
+                                {{ ucfirst($booking->payment_method) }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger btn-sm delete-booking"
+                                    data-booking-id="{{ $booking->id }}"
+                                    data-csrf-token="{{ csrf_token() }}">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
 @endsection
 
 @section('modals')
@@ -1001,5 +996,43 @@
             setupDeleteButtons();
             setupCopyButtons();
         });
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+    // Add click event for all delete buttons
+    document.querySelectorAll('.delete-booking').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const bookingId = this.getAttribute('data-booking-id');
+            const csrfToken = this.getAttribute('data-csrf-token');
+
+            if (confirm('Are you sure you want to delete this booking?')) {
+                fetch(`/bookings/${bookingId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Remove the row from the table
+                        document.getElementById(`booking-row-${bookingId}`).remove();
+                        // Optionally show a success message
+                        alert('Booking deleted successfully');
+                    } else {
+                        throw new Error('Failed to delete booking');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting booking');
+                });
+            }
+        });
+    });
+});
     </script>
 @endsection

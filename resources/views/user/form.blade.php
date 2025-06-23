@@ -471,7 +471,6 @@
                     <div id="coupon-message" class="coupon-message"></div>
                     <input type="hidden" id="coupon_discount" name="coupon_discount" value="0">
                     <input type="hidden" id="applied_coupon_code" name="applied_coupon_code" value="">
-                    <input type="hidden" name="subtotal" id="subtotal_field" value="">
                 </div>
                 <!-- Payment -->
                 <div class="form-group">

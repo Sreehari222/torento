@@ -57,7 +57,7 @@ class BookingController extends Controller
         '5:00 PM'
     ];
 
-    public function show()
+    public function showform(Booking $booking)
     {
         return view('user.form', [
             'frequencies'       => Frequency::all(),
@@ -66,63 +66,64 @@ class BookingController extends Controller
             'bedrooms'          => Bedroom::all(),
             'bathrooms'         => Bathroom::all(),
             'customOptions'     => CustomOption::all(),
+            'booking'           => $booking,
             'serviceAreas'      => self::SERVICE_AREAS,
             'serviceTimes'      => self::SERVICE_TIMES,
         ]);
     }
 
     public function validateCoupon(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'coupon_code' => 'required|string',
-        'subtotal' => 'required|numeric|min:0'
-    ]);
+    {
+        $validator = Validator::make($request->all(), [
+            'coupon_code' => 'required|string',
+            'subtotal' => 'required|numeric|min:0'
+        ]);
 
-    if ($validator->fails()) {
+        if ($validator->fails()) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Invalid request'
+            ], 422);
+        }
+
+        $coupon = Coupon::where('code', $request->coupon_code)
+            ->where('is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('expiry_date')
+                    ->orWhere('expiry_date', '>=', now());
+            })
+            ->first();
+
+        if (!$coupon) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Invalid or expired coupon code'
+            ]);
+        }
+
+        // Remove the max_uses check completely
+        // if ($coupon->max_uses !== null && $coupon->used_count >= $coupon->max_uses) {
+        //     return response()->json([
+        //         'valid' => false,
+        //         'message' => 'This coupon has reached its maximum usage limit'
+        //     ]);
+        // }
+
+        // Check minimum order amount
+        if ($coupon->min_order_amount !== null && $request->subtotal < $coupon->min_order_amount) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'This coupon requires a minimum order amount of ' . $coupon->min_order_amount
+            ]);
+        }
+
         return response()->json([
-            'valid' => false,
-            'message' => 'Invalid request'
-        ], 422);
-    }
-
-    $coupon = Coupon::where('code', $request->coupon_code)
-        ->where('is_active', true)
-        ->where(function($query) {
-            $query->whereNull('expiry_date')
-                  ->orWhere('expiry_date', '>=', now());
-        })
-        ->first();
-
-    if (!$coupon) {
-        return response()->json([
-            'valid' => false,
-            'message' => 'Invalid or expired coupon code'
+            'valid' => true,
+            'discount_amount' => $coupon->discount_value,
+            'discount_type' => $coupon->discount_type,
+            'max_discount_amount' => $coupon->max_discount_amount
         ]);
     }
-
-    // Remove the max_uses check completely
-    // if ($coupon->max_uses !== null && $coupon->used_count >= $coupon->max_uses) {
-    //     return response()->json([
-    //         'valid' => false,
-    //         'message' => 'This coupon has reached its maximum usage limit'
-    //     ]);
-    // }
-
-    // Check minimum order amount
-    if ($coupon->min_order_amount !== null && $request->subtotal < $coupon->min_order_amount) {
-        return response()->json([
-            'valid' => false,
-            'message' => 'This coupon requires a minimum order amount of ' . $coupon->min_order_amount
-        ]);
-    }
-
-    return response()->json([
-        'valid' => true,
-        'discount_amount' => $coupon->discount_value,
-        'discount_type' => $coupon->discount_type,
-        'max_discount_amount' => $coupon->max_discount_amount
-    ]);
-}
 
     public function store(Request $request)
     {
@@ -137,15 +138,7 @@ class BookingController extends Controller
             ], 422);
         }
 
-        // Check if phone number has been used before
-        $existingBooking = Booking::where('phone', $request->phone)->first();
-        if ($existingBooking) {
-            $errors['phone'] = ['This phone number has already been used for a previous booking'];
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $errors
-            ], 422);
-        }
+
 
         // Main validation
         $validator = Validator::make($request->all(), [
@@ -195,41 +188,41 @@ class BookingController extends Controller
             'subtotal' => 'required|numeric|min:0',
             'original_subtotal' => 'required|numeric|min:0',
         ]);
- $discountAmount = 0;
-    $couponDiscount = 0;
-    $coupon = null;
-    $originalSubtotal = $request->original_subtotal;
-    $subtotal = $request->subtotal;
+        $discountAmount = 0;
+        $couponDiscount = 0;
+        $coupon = null;
+        $originalSubtotal = $request->original_subtotal;
+        $subtotal = $request->subtotal;
 
-    // Validate and apply coupon if provided
-    if ($request->filled('coupon_code')) {
-        $coupon = Coupon::where('code', $request->coupon_code)
-            ->where('is_active', true)
-            ->where(function($query) {
-                $query->whereNull('expiry_date')
-                      ->orWhere('expiry_date', '>=', now());
-            })
-            ->first();
+        // Validate and apply coupon if provided
+        if ($request->filled('coupon_code')) {
+            $coupon = Coupon::where('code', $request->coupon_code)
+                ->where('is_active', true)
+                ->where(function ($query) {
+                    $query->whereNull('expiry_date')
+                        ->orWhere('expiry_date', '>=', now());
+                })
+                ->first();
 
-        if ($coupon) {
-            // Calculate discount based on coupon type
-            if ($coupon->discount_type === 'percentage') {
-                $couponDiscount = $coupon->discount_value;
-                $discountAmount = $originalSubtotal * ($couponDiscount / 100);
+            if ($coupon) {
+                // Calculate discount based on coupon type
+                if ($coupon->discount_type === 'percentage') {
+                    $couponDiscount = $coupon->discount_value;
+                    $discountAmount = $originalSubtotal * ($couponDiscount / 100);
 
-                // Apply maximum discount if set
-                if ($coupon->max_discount_amount !== null) {
-                    $discountAmount = min($discountAmount, $coupon->max_discount_amount);
+                    // Apply maximum discount if set
+                    if ($coupon->max_discount_amount !== null) {
+                        $discountAmount = min($discountAmount, $coupon->max_discount_amount);
+                    }
+                } elseif ($coupon->discount_type === 'fixed') {
+                    $couponDiscount = $coupon->discount_value;
+                    $discountAmount = min($couponDiscount, $originalSubtotal);
                 }
-            } elseif ($coupon->discount_type === 'fixed') {
-                $couponDiscount = $coupon->discount_value;
-                $discountAmount = min($couponDiscount, $originalSubtotal);
             }
         }
-    }
 
-    // Calculate final total
-    $total = $originalSubtotal - $discountAmount;
+        // Calculate final total
+        $total = $originalSubtotal - $discountAmount;
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
@@ -248,9 +241,9 @@ class BookingController extends Controller
         if ($request->filled('coupon_code')) {
             $coupon = Coupon::where('code', $request->coupon_code)
                 ->where('is_active', true)
-                ->where(function($query) {
+                ->where(function ($query) {
                     $query->whereNull('expiry_date')
-                          ->orWhere('expiry_date', '>=', now());
+                        ->orWhere('expiry_date', '>=', now());
                 })
                 ->first();
 
@@ -324,5 +317,26 @@ class BookingController extends Controller
     {
         $booking = Booking::findOrFail($id);
         return view('user.confirmation', compact('booking'));
+    }
+
+    public function destroy(Booking $booking)
+    {
+        $booking->delete();
+        return response()->json(['message' => 'Booking deleted successfully']);
+    }
+
+    // Handles web form submissions
+    public function delete(Booking $booking)
+    {
+        $booking->delete();
+        return redirect()
+            ->route('admin.bookings.index')
+            ->with('success', 'Booking #' . $booking->id . ' deleted successfully');
+    }
+
+public function showdetails(Booking $booking)
+    {
+
+        return view('user.show', compact('booking'));
     }
 }

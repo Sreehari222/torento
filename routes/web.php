@@ -21,17 +21,19 @@ Route::get("/", function () {
 Auth::routes();
 
 // Booking routes
-Route::get('/Booking_form', [BookingController::class, 'show'])->name('showform');
+Route::get('/Booking_form', [BookingController::class, 'showform'])->name('showform');
 Route::post('/Booking_form/store', [BookingController::class, 'store'])->name('booking.store');
 Route::post('/validate-coupon', action: [CouponController::class, 'validateCoupon'])->name('validate.coupon');
 Route::get('/booking/confirmation/{id}', [BookingController::class, 'confirmation'])->name('booking.confirmation');
-
+Route::get('/bookings/{booking}/show', [BookingController::class, 'showdetails'])->name('showdetails');
 // Rate routes
 Route::get('/rates', [RateController::class, 'index'])->name('rates.index');
 Route::get('/rates/create', [RateController::class, 'create'])->name('rates.create');
 Route::post('/rates', [RateController::class, 'store'])->name('rates.store');
 Route::get('/rates/edit', [RateController::class, 'edit'])->name('rates.edit');
 Route::put('/rates/{id}', [RateController::class, 'update'])->name('rates.update');
+Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
+Route::delete('/bookings/{booking}/delete', [BookingController::class, 'delete'])->name('bookings.delete');
 
 Route::put('/frequencies/{id}', [RateController::class, 'updateFrequency'])->name('admin.frequencies.update');
 Route::put('/cleaning-types/{id}', [RateController::class, 'updateCleaningType'])->name('admin.cleaning-types.update');
@@ -41,7 +43,7 @@ Route::put('/bathrooms/{id}', [RateController::class, 'updateBathroom'])->name('
 Route::put('/custom-options/{id}', [RateController::class, 'updateCustomOption'])->name('admin.custom-options.update');
 // Delete routes for all sections
 Route::delete('/frequencies/{frequency}', [RateController::class, 'destroyFrequency'])->name('frequencies.destroy');
-Route::delete('/cleaning_types/{cleaningType}', [RateController::class, 'destroyCleaningType'])->name('cleaning-types.destroy');
+Route::delete('/cleaning_types/{cleaningType}', action: [RateController::class, 'destroyCleaningType'])->name('cleaning-types.destroy');
 Route::delete('/square-footages/{squareFootage}', [RateController::class, 'destroySquarefootages'])->name('square-footages.destroy');
 Route::delete('/bedrooms/{bedroom}', [RateController::class, 'destroybedroom'])->name('bedrooms.destroy');
 Route::delete('/bathrooms/{bathroom}', [RateController::class, 'destroybathrooms'])->name('bathrooms.destroy');
@@ -63,6 +65,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('coupons/{coupon}', [CouponController::class, 'destroy'])->name('coupons.destroy');
     Route::get('/bookings', [CouponController::class, 'bookings'])->name('bookings');
     Route::get('/bookings/list', [BookingController::class, 'index'])->name('bookings.index');
+    Route::put('/coupons/{coupon}/toggle-status', [CouponController::class, 'toggleStatus']);
     Route::get('/admin/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
     Route::delete('bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
 

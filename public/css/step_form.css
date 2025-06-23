@@ -467,7 +467,6 @@ h2 {
 }
 
 .frequency-label input[type="radio"]:checked + .card-content::after {
-    content: '✓';
     position: absolute;
     top: 8px;
     right: 8px;

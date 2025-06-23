@@ -7,6 +7,8 @@
     <title>Admin Dashboard - @yield('title')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ asset('/css/app.css') }}" rel="stylesheet">
     <script src="{{ asset('js/app.js') }}"></script>
 
@@ -79,12 +81,6 @@
             font-family: inherit;
             background: none;
             border: none;
-        }
-
-        /* ========== Layout Styles ========== */
-        .flex-container {
-            display: flex;
-            min-height: 100vh;
         }
 
         /* ========== Sidebar Styles ========== */
@@ -236,7 +232,6 @@
         }
 
         .nav-dropdown-item.active {
-            background-color:transparent;
             color: blue;
         }
 
@@ -351,16 +346,6 @@
         }
 
         /* ========== Responsive Styles ========== */
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 220px;
-            }
-
-            .main-content {
-                margin-left: 220px;
-            }
-        }
-
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -444,11 +429,11 @@
                     <div class="nav-dropdown-content">
                         <a href="{{ route('rates.create') }}"
                            class="nav-dropdown-item {{ request()->routeIs('rates.create') ? 'active' : '' }}">
-                            Create New Rate
+                            Create New Services
                         </a>
                         <a href="{{ route('rates.edit') }}"
-                           class="nav-dropdown-item {{ request()->routeIs('rates.update')  ? 'active' : '' }}">
-                            Update Rate
+                           class="nav-dropdown-item {{ request()->routeIs('rates.update') ? 'active' : '' }}">
+                            Update Services
                         </a>
                     </div>
                 </div>

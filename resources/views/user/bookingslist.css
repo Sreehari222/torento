@@ -1,0 +1,135 @@
+/* Bookings Specific Styles */
+.bookings-container {
+    padding: 2rem;
+    max-width: 100%;
+}
+
+.bookings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.bookings-title {
+    font-weight: 700;
+    color: var(--bookings-primary);
+    margin: 0;
+    font-size: 2rem;
+}
+
+.bookings-new-btn {
+    background-color: var(--bookings-primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.bookings-new-btn:hover {
+    background-color: var(--bookings-primary-dark);
+    transform: translateY(-1px);
+}
+
+.bookings-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.bookings-card-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bookings-table-container {
+    overflow-x: auto;
+}
+
+.bookings-table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.bookings-table th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.bookings-table td {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+    vertical-align: top;
+}
+
+/* Status Badges */
+.bookings-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    display: inline-block;
+}
+
+.bookings-status-confirmed {
+    background-color: #10b981;
+    color: white;
+}
+
+.bookings-status-pending {
+    background-color: #f59e0b;
+    color: #1e293b;
+}
+
+/* Action Buttons */
+.bookings-action-btn {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 80px;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.bookings-action-view {
+    background-color: #0ea5e9;
+    color: white;
+}
+
+.bookings-action-delete {
+    background-color: #ef4444;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .bookings-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .bookings-table th,
+    .bookings-table td {
+        padding: 0.75rem;
+    }
+}

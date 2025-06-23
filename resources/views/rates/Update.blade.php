@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Create New Rate</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -471,6 +471,7 @@
         .admin-pricing-container {
             display: grid;
             gap: var(--space-lg);
+            margin-left: 6%;
         }
 
         /* Card Styling */
@@ -552,6 +553,8 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
         }
+
+
 
         /* Checkbox Styling */
         .checkbox-container {
@@ -656,6 +659,62 @@
             align-items: center;
             gap: var(--space-sm);
         }
+        /* Base delete button styles */
+.delete-btn {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  min-width: 100px;
+}
+
+/* Hover/Active States */
+.delete-btn:hover {
+  background-color: #c53030;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.delete-btn:active {
+  background-color: #9b2c2c;
+  transform: translateY(0);
+}
+
+.delete-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.5);
+}
+
+/* Size Variations */
+.delete-btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  min-width: 80px;
+}
+
+/* Icon Style */
+.delete-btn svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .delete-btn {
+    width: 100%;
+    padding: 0.5rem;
+  }
+}
 
         .addon-image-preview {
             width: 50px;
@@ -799,10 +858,10 @@
                     </button>
                     <div class="nav-dropdown-content">
                         <a href="{{ route('rates.create') }}" class="nav-dropdown-item ">
-                            Create New Rate
+                            Create New Services
                         </a>
                         <a href="{{ route('rates.edit') }}" class="nav-dropdown-item active ">
-                            Update Rate
+                            Update Services
                         </a>
                     </div>
                 </div>
@@ -810,8 +869,6 @@
         </nav>
     </div>
     <div class="container">
-        <h1 class="page-title">Service Pricing Management</h1>
-
         <div class="admin-pricing-container">
             <!-- Service Frequencies Section -->
             <div class="pricing-section card">
@@ -869,7 +926,7 @@
                                     <td>
                                         <button class="btn btn-primary btn-sm save-service-type"
                                             data-id="{{ $type->id }}">Save</button>
-                                        <button class="btn btn-danger btn-sm delete-service-type"
+                                        <button class="btn delete-btn btn-sm delete-service-type"
                                             data-id="{{ $type->id }}">Delete</button>
                                     </td>
                                 </tr>
@@ -881,7 +938,6 @@
 
             <!-- Property Details Section -->
             <div class="pricing-section card">
-                <h2 class="section-title">Property Details Pricing</h2>
 
                 <!-- Square Footage -->
                 <h3 class="sub-section-title">Home Size</h3>
@@ -905,7 +961,7 @@
                                     <td>
                                         <button class="btn btn-primary btn-sm save-size"
                                             data-id="{{ $size->id }}">Save</button>
-                                        <button class="btn btn-danger btn-sm delete-size"
+                                        <button class="btn delete-btn btn-sm delete-size"
                                             data-id="{{ $size->id }}">Delete</button>
                                     </td>
                                 </tr>
@@ -936,7 +992,7 @@
                                     <td>
                                         <button class="btn btn-primary btn-sm save-bedroom"
                                             data-id="{{ $bedroom->id }}">Save</button>
-                                        <button class="btn btn-danger btn-sm delete-bedroom"
+                                        <button class="btn delete-btn btn-sm delete-bedroom"
                                             data-id="{{ $bedroom->id }}">Delete</button>
                                     </td>
                                 </tr>
@@ -967,7 +1023,7 @@
                                     <td>
                                         <button class="btn btn-primary btn-sm save-bathroom"
                                             data-id="{{ $bathroom->id }}">Save</button>
-                                        <button class="btn btn-danger btn-sm delete-bathroom"
+                                        <button class="btn delete-btn btn-sm delete-bathroom"
                                             data-id="{{ $bathroom->id }}">Delete</button>
                                     </td>
                                 </tr>
@@ -1011,7 +1067,7 @@
                                     <td>
                                         <button class="btn btn-primary btn-sm save-addon"
                                             data-id="{{ $option->id }}">Save</button>
-                                        <button class="btn btn-danger btn-sm delete-addon"
+                                        <button class="btn delete-btn btn-sm delete-addon"
                                             data-id="{{ $option->id }}">Delete</button>
                                     </td>
                                 </tr>
